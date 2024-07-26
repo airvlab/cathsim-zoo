@@ -1,0 +1,29 @@
+[project]
+name = "cathsim-zoo"
+version = "0.1.dev1"
+description = "Endovascular simulator for autonomy development"
+readme = "README.md"  # Point this to your README file if you have one.
+# Homepage = "https://robotvisionlabs.github.io/cathsim/"
+# Documentation = "https://readthedocs.org"
+# Repository = "https://github.com/robotvisionlabs/cathsim"
+authors = [
+    {name = "Tudor Jianu", email = "tudorjnu@gmail.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Free for non-commercial use",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "gymnasium",
+    "stable_baselines3",
+    "mujoco",
+    "cathsim@git+https://github.com/airvlab/cathsim.git@dev-2",
+    "opencv-python",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff.lint]
+ignore = ["F401"]
