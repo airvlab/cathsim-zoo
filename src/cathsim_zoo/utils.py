@@ -1,11 +1,10 @@
 import os
-import torch as th
 from pathlib import Path
 
-
+import gymnasium as gym
+import torch as th
 from stable_baselines3 import PPO, SAC
 from stable_baselines3.common.base_class import BaseAlgorithm
-
 
 ALGOS = {
     "ppo": PPO,
@@ -38,12 +37,29 @@ def load_sb3_model(path: Path, config_name: str = None) -> BaseAlgorithm:
     return model
 
 
-if __name__ == "__main__":
-    from cathsim.rl import Config, make_gym_env
-    from pprint import pprint
-    import stable_baselines3
+def make_gym_env(
+    n_envs: int = 1,
+    env_kwargs: dict = dict(
+        image_size=80,
+        image_fn=lambda x: x,
+    ),
+) -> gym.Env:
+    from stable_baselines3.common.monitor import Monitor
+    from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor
 
-    config = Config()
-    # print(config)
-    env = make_gym_env(config=config, n_envs=1)
-    pprint(config.algo_kwargs)
+    def _create_env() -> gym.Env:
+        import cathsim
+
+        env = gym.make("CathSim-v1", **env_kwargs)
+
+        return env
+
+    if n_envs > 1:
+        envs = [_create_env for _ in range(n_envs)]
+        env = SubprocVecEnv(envs)
+    else:
+        env = _create_env()
+
+    env = Monitor(env) if n_envs == 1 else VecMonitor(env)
+
+    return env
